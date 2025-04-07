@@ -1,9 +1,10 @@
 import { prisma } from '@/db/prisma';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { compareSync } from 'bcrypt-ts-edge';
-import type { NextAuthConfig } from 'next-auth';
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { cookies } from 'next/headers';
+import { authConfig } from './auth.config';
 
 export const config = {
   pages: {
@@ -11,7 +12,7 @@ export const config = {
     error: '/sign-in',
   },
   session: {
-    strategy: 'jwt',
+    strategy: 'jwt' as const,
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   adapter: PrismaAdapter(prisma),
@@ -51,6 +52,7 @@ export const config = {
     }),
   ],
   callbacks: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async session({ session, user, trigger, token }: any) {
       // set the user id from the token
       session.user.id = token.sub;
@@ -63,12 +65,14 @@ export const config = {
       }
       return session;
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async jwt({ token, user, trigger, session }: any) {
       // assign user fields to the token
       if (user) {
+        token.id = user.id;
         token.role = user.role;
 
-        // if user has no name the use the email
+        // if user has no name then use the email
         if (user.name === 'NO_NAME') {
           token.name = user.email.split('@')[0];
 
@@ -78,10 +82,33 @@ export const config = {
             data: { name: token.name },
           });
         }
+
+        if (trigger === 'signIn' || trigger === 'signUp') {
+          const cookiesObj = await cookies();
+          const sessionCartId = cookiesObj.get('sessionCartId')?.value;
+
+          if (sessionCartId) {
+            const sessionCart = await prisma.cart.findFirst({
+              where: { sessionCartId },
+            });
+
+            if (sessionCart) {
+              // delete current user cart
+              await prisma.cart.deleteMany({ where: { userId: user.id } });
+
+              //assign new cart
+              await prisma.cart.update({
+                where: { id: sessionCart.id },
+                data: { userId: user.id },
+              });
+            }
+          }
+        }
       }
       return token;
     },
+    ...authConfig.callbacks,
   },
-} satisfies NextAuthConfig;
+};
 
 export const { handlers, auth, signIn, signOut } = NextAuth(config);

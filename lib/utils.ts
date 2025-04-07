@@ -37,3 +37,31 @@ export function formatError(error: any) {
       : JSON.stringify(error.message);
   }
 }
+
+// round number to 2 decimal places
+export function roundToTwo(value: number | string) {
+  if (typeof value === 'number') {
+    return Math.round((value + Number.EPSILON) * 100) / 100;
+  } else if (typeof value === 'number') {
+    return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+  } else {
+    throw new Error('value is not a number or string');
+  }
+}
+
+const CURRENCY_FORMATTER = new Intl.NumberFormat('en-US', {
+  currency: 'USD',
+  style: 'currency',
+  minimumFractionDigits: 2,
+});
+
+// format currency using the formatter above
+export function formatCurrency(amount: number | string | null) {
+  if (typeof amount === 'number') {
+    return CURRENCY_FORMATTER.format(amount);
+  } else if (typeof amount === 'string') {
+    return CURRENCY_FORMATTER.format(Number(amount));
+  } else {
+    return 'NaN';
+  }
+}
