@@ -53,10 +53,13 @@ const OrderDetailsTable = ({
     let status = '';
     if (isPending) {
       status = 'loading...';
+      /* TODO: fix */
     } else if (isRejected) {
       status = 'error loading paypal';
     } else return status;
   };
+
+  console.log({paypalClientId, paymentMethod, });
 
   const hadleCreatePaypalOrder = async () => {
     const res = await createPaypalOrder(order.id);
@@ -176,8 +179,9 @@ const OrderDetailsTable = ({
               </div>
 
               {/* PAYPAL PAYMENT */}
-              {!isPaid && paymentMethod === 'PayPal' && (
+              {!isPaid  && (
                 <div>
+                  {JSON.stringify(paymentMethod === 'PayPal')}
                   <PayPalScriptProvider options={{ clientId: paypalClientId }}>
                     <PrintLoadingState />
                     <PayPalButtons
