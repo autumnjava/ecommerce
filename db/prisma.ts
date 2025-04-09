@@ -28,8 +28,6 @@ export const prisma = new PrismaClient({ adapter }).$extends({
         },
       },
     },
-
-    // TODO: refactor
     cart: {
       itemsPrice: {
         needs: { itemsPrice: true },
