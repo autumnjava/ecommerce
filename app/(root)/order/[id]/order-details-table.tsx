@@ -14,11 +14,25 @@ import { formatCurrency, formatDateTime, formatId } from '@/lib/utils';
 import { Order } from '@/types';
 import Link from 'next/link';
 import Image from 'next/image';
+import {
+  PayPalScriptProvider,
+  PayPalButtons,
+  usePayPalScriptReducer,
+} from '@paypal/react-paypal-js';
+import {
+  approvePaypalOrder,
+  createPaypalOrder,
+} from '@/lib/actions/order.actions';
+import { toast } from 'sonner';
 
 type OrderDetailsTableProps = {
   order: Order;
+  paypalClientId: string;
 };
-const OrderDetailsTable = ({ order }: OrderDetailsTableProps) => {
+const OrderDetailsTable = ({
+  order,
+  paypalClientId,
+}: OrderDetailsTableProps) => {
   const {
     id,
     shippingAddress,
@@ -34,6 +48,33 @@ const OrderDetailsTable = ({ order }: OrderDetailsTableProps) => {
     deliveredAt,
   } = order;
 
+  const PrintLoadingState = () => {
+    const [isPending, isRejected] = usePayPalScriptReducer();
+    let status = '';
+    if (isPending) {
+      status = 'loading...';
+    } else if (isRejected) {
+      status = 'error loading paypal';
+    } else return status;
+  };
+
+  const hadleCreatePaypalOrder = async () => {
+    const res = await createPaypalOrder(order.id);
+
+    if (!res.success) {
+      toast.error(res.message);
+      return;
+    }
+
+    return res.data;
+  };
+
+  const handleApprovePaypalOrder = async (data: { orderID: string }) => {
+    const res = await approvePaypalOrder(order.id, data);
+
+    toast(res.message);
+  };
+
   return (
     <>
       <h1 className="text-2xxl py-4">Order {formatId(id)}</h1>
@@ -42,7 +83,7 @@ const OrderDetailsTable = ({ order }: OrderDetailsTableProps) => {
           <Card>
             <CardContent className="gap-4 p-4">
               <h2 className="pb-4 text-xl">Payment Method</h2>
-              <p className='mb-2'>{paymentMethod}</p>
+              <p className="mb-2">{paymentMethod}</p>
               {isPaid ? (
                 <Badge variant="secondary">
                   Paid at: {formatDateTime(paidAt!).dateTime}
@@ -56,7 +97,7 @@ const OrderDetailsTable = ({ order }: OrderDetailsTableProps) => {
             <CardContent className="gap-4 p-4">
               <h2 className="pb-4 text-xl">Shipping Address</h2>
               <p>{shippingAddress.fullName}</p>
-              <p className='mb-2'>
+              <p className="mb-2">
                 {shippingAddress.streetAddress}, {shippingAddress.city}
                 {shippingAddress.postalCode}, {shippingAddress.country}
               </p>
@@ -133,6 +174,19 @@ const OrderDetailsTable = ({ order }: OrderDetailsTableProps) => {
                 <div>Total</div>
                 <div>{formatCurrency(totalPrice)}</div>
               </div>
+
+              {/* PAYPAL PAYMENT */}
+              {!isPaid && paymentMethod === 'PayPal' && (
+                <div>
+                  <PayPalScriptProvider options={{ clientId: paypalClientId }}>
+                    <PrintLoadingState />
+                    <PayPalButtons
+                      createOrder={hadleCreatePaypalOrder}
+                      onApprove={handleApprovePaypalOrder}
+                    />
+                  </PayPalScriptProvider>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
