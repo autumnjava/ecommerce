@@ -179,7 +179,7 @@ const ShippingAddressForm = ({ address }: ShippingAddressFormProps) => {
                   <Loader className="h-4 w-4 animate-spin" />
                 ) : (
                   <ArrowRight className="h-4 w-4" />
-                )}{' '}
+                )}
                 Continue
               </Button>
             </div>
