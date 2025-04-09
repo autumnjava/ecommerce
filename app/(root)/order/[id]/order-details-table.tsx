@@ -10,19 +10,19 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatCurrency, formatDateTime, formatId } from '@/lib/utils';
-import { Order } from '@/types';
-import Link from 'next/link';
-import Image from 'next/image';
-import {
-  PayPalScriptProvider,
-  PayPalButtons,
-  usePayPalScriptReducer,
-} from '@paypal/react-paypal-js';
 import {
   approvePaypalOrder,
   createPaypalOrder,
 } from '@/lib/actions/order.actions';
+import { formatCurrency, formatDateTime, formatId } from '@/lib/utils';
+import { Order } from '@/types';
+import {
+  PayPalButtons,
+  PayPalScriptProvider,
+  usePayPalScriptReducer,
+} from '@paypal/react-paypal-js';
+import Image from 'next/image';
+import Link from 'next/link';
 import { toast } from 'sonner';
 
 type OrderDetailsTableProps = {
@@ -48,15 +48,16 @@ const OrderDetailsTable = ({
     deliveredAt,
   } = order;
 
-  const PrintLoadingState = () => {
-    const [{isPending, isRejected}] = usePayPalScriptReducer();
+  function PrintLoadingState() {
+    const [{ isPending, isRejected }] = usePayPalScriptReducer();
     let status = '';
     if (isPending) {
-      status = 'Loading...';
+      status = 'Loading PayPal...';
     } else if (isRejected) {
-      status = 'Error loading paypal';
-    } else return status;
-  };
+      status = 'Error in loading PayPal.';
+    }
+    return status;
+  }
 
   const hadleCreatePaypalOrder = async () => {
     const res = await createPaypalOrder(order.id);
@@ -176,7 +177,7 @@ const OrderDetailsTable = ({
               </div>
 
               {/* PAYPAL PAYMENT */}
-              {!isPaid  && paymentMethod === 'PayPal' &&(
+              {!isPaid && paymentMethod === 'PayPal' && (
                 <div>
                   <PayPalScriptProvider options={{ clientId: paypalClientId }}>
                     <PrintLoadingState />
