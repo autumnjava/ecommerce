@@ -125,7 +125,7 @@ const CartTable = ({ cart }: CartTableProps) => {
                 </span>
               </div>
               <Button
-                className="w-full"
+                className="w-full cursor-pointer"
                 disabled={isPending}
                 onClick={() =>
                   startTransition(() => router.push('/shipping-address'))

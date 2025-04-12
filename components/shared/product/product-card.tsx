@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { getMyCart } from '@/lib/actions/cart.actions';
+import { cn } from '@/lib/utils';
 import { Product } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
 import AddToCart from './add-to-cart';
 import ProductPrice from './product-price';
-import clsx from 'clsx';
 
 const ProductCard = async ({ product }: { product: Product }) => {
   const cart = await getMyCart();
@@ -32,7 +32,7 @@ const ProductCard = async ({ product }: { product: Product }) => {
           <p>{product.rating} stars</p>
           <ProductPrice
             value={Number(product.price)}
-            className={clsx({ 'text-gray-100': product.stock === 0 })}
+            className={cn(product.stock === 0 && 'text-gray-100')}
           />
         </div>
         {product.stock > 0 ? (

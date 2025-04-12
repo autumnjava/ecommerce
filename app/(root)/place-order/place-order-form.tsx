@@ -22,7 +22,7 @@ const PlaceOrderForm = () => {
   const PlaceOrderButton = () => {
     const { pending } = useFormStatus();
     return (
-      <Button disabled={pending === true} className="w-full">
+      <Button disabled={pending === true} className="w-full cursor-pointer">
         {pending ? (
           <Loader className="h-4 w-4 animate-spin" />
         ) : (

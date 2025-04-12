@@ -39,14 +39,14 @@ const PaymentMethodForm = ({
 
   const onSubmit = async (values: z.infer<typeof paymentMethodSchema>) => {
     startTransition(async () => {
-        const res = await updateUserPaymentMethod(values);
-        if (!res.success) {
-            toast.error(res.message);
-            return;
-          }
-    
-          router.push('/place-order');
-    })
+      const res = await updateUserPaymentMethod(values);
+      if (!res.success) {
+        toast.error(res.message);
+        return;
+      }
+
+      router.push('/place-order');
+    });
   };
 
   return (
@@ -98,7 +98,11 @@ const PaymentMethodForm = ({
             </div>
 
             <div className="flex gap-2">
-              <Button type="submit" disabled={isPending}>
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="cursor-pointer"
+              >
                 {isPending ? (
                   <Loader className="h-4 w-4 animate-spin" />
                 ) : (
