@@ -41,7 +41,7 @@ const PlaceOrderPage = async () => {
 
   return (
     <>
-      <CheckoutSteps current={3} />
+      <CheckoutSteps current="place-order" />
       <h1 className="py-4 text-2xl">Place Order</h1>
       <div className="grid md:grid-cols-3 md:gap-5">
         <div className="space-y-4 overflow-x-auto md:col-span-2">
@@ -55,7 +55,7 @@ const PlaceOrderPage = async () => {
               </p>
               <div className="mt-3">
                 <Link href="/shipping-address">
-                  <Button variant="outline">Edit</Button>
+                  <Button variant="outline" className='cursor-pointer'>Edit</Button>
                 </Link>
               </div>
             </CardContent>
@@ -67,7 +67,7 @@ const PlaceOrderPage = async () => {
 
               <div className="mt-3">
                 <Link href="/payment-method">
-                  <Button variant="outline">Edit</Button>
+                  <Button variant="outline" className='cursor-pointer'>Edit</Button>
                 </Link>
               </div>
             </CardContent>

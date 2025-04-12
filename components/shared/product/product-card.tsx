@@ -13,7 +13,10 @@ const ProductCard = async ({ product }: { product: Product }) => {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader className="items-center p-0">
-        <Link href={`/product/${product.slug}`} className="group relative">
+        <Link
+          href={`/product/${product.slug}`}
+          className="group flex-center relative"
+        >
           <Image
             src={product.images[0]}
             alt={product.name}
@@ -31,8 +34,7 @@ const ProductCard = async ({ product }: { product: Product }) => {
               alt={product.name}
               height={300}
               width={300}
-              priority={true}
-              className="absolute top-0 left-0 opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
+              className="absolute top-0 left-1/2 -translate-x-1/2 transform opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
             />
           )}
         </Link>
