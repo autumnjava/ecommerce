@@ -13,14 +13,28 @@ const ProductCard = async ({ product }: { product: Product }) => {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader className="items-center p-0">
-        <Link href={`/product/${product.slug}`}>
+        <Link href={`/product/${product.slug}`} className="group relative">
           <Image
             src={product.images[0]}
             alt={product.name}
             height={300}
             width={300}
             priority={true}
-          ></Image>
+            className={cn(
+              product.images.length > 1 &&
+                'transition-opacity duration-200 ease-in-out group-hover:opacity-0'
+            )}
+          />
+          {product.images.length > 1 && (
+            <Image
+              src={product.images[1]}
+              alt={product.name}
+              height={300}
+              width={300}
+              priority={true}
+              className="absolute top-0 left-0 opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
+            />
+          )}
         </Link>
       </CardHeader>
       <CardContent className="grid gap-4 p-4">
