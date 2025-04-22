@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
+import queryString from 'query-string';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -68,7 +69,7 @@ export function formatCurrency(amount: number | string | null) {
 
 // shorten UUID
 export function formatId(id: string) {
-  return `..${id.substring(id.length - 6)}`
+  return `..${id.substring(id.length - 6)}`;
 }
 
 // format date and times
@@ -110,3 +111,21 @@ export const formatDateTime = (dateString: Date) => {
     timeOnly: formattedTime,
   };
 };
+
+export function urlQueryBuilder({
+  params,
+  key,
+  value,
+}: {
+  params: string;
+  key: string;
+  value: string | null;
+}) {
+  const query = queryString.parse(params);
+  query[key] = value;
+
+  return queryString.stringifyUrl(
+    { url: window.location.pathname, query },
+    { skipNull: true }
+  );
+}
